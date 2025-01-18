@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "Serialsh.h"
+#include "serialsh.h"
 
 #define MAX_INPUT_SIZE 1024
 
@@ -32,16 +32,49 @@ int echo_args (char *args) {
     return 0;
 }
 
+int proc_wrap(const char **params) {
+    int param = atoi(params[0]);
+    printf("prov_wrap called with param %d\n", param);
+    return 0;
+}
+
+int proc_level(const char **params) {
+    int param = atoi(params[0]);
+    printf("proc_level called with param %d\n", param);
+    return 0;
+}
+
+int proc_state(const char **params) {
+    int param1 = atoi(params[0]);
+    int param2 = atoi(params[1]);
+    printf("proc_state called with params %d, %d\n", param1, param2);
+    return 0;
+}
+
+SrshArgEntry apt_specs[] = {
+    {'w', 1, proc_wrap},
+    {'l', 1, proc_level},
+    {'s', 2, proc_state}
+};
+
+int argparse_test (char *args) {
+    int ret = srsh_proc_args(args, apt_specs,
+                             sizeof(apt_specs) / sizeof(apt_specs[0]));
+    return ret;
+}
+
 int main() {
     char input_b[MAX_INPUT_SIZE];
     char echo_back_name[] = "echo";
     char echo_args_name[] = "eargs";
+    char proc_args_name[] = "pargs";
     int call_ret = 0;
 
     printf("SerialSh dummy ready.\n");
 
-    srsh_register_func((void *)echo_back, echo_back_name);
-    srsh_register_func((void *)echo_args, echo_args_name);
+    srsh_register_func((void *)echo_back, echo_back_name, NULL);
+    srsh_register_func((void *)echo_args, echo_args_name, NULL);
+    srsh_register_func((void *)argparse_test, proc_args_name, apt_specs);
 
     while(1) {
         printf("> ");
