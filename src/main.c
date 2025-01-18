@@ -51,10 +51,17 @@ int proc_state(const char **params) {
     return 0;
 }
 
+int proc_help(const char **params) {
+    (void) params; // Do nothing; prevent -Wunused-variable
+    printf("Dummy help message\n");
+    return 0;
+}
+
 SrshArgEntry apt_specs[] = {
     {'w', 1, proc_wrap},
     {'l', 1, proc_level},
-    {'s', 2, proc_state}
+    {'s', 2, proc_state},
+    {'h', 0, proc_help}
 };
 
 int argparse_test (char *args) {
@@ -92,7 +99,7 @@ int main() {
             break;
         }
 
-        call_ret = srsh_parse(input_b, 0);
+        call_ret = srsh_parse(input_b);
         printf("Parse result: %d\n", call_ret);
     }
 
